@@ -41,7 +41,7 @@
     <div class="col-md-6 mb-3">
       <label for="Email">Email <sup class="text-danger">*</sup></label>
       <input type="email" placeholder="Email" class="form-control" [formControl]="addUserForm.controls['email']"
-        maxlength="50" name="email" id="email" [attr.disabled]="CompanyId">
+        maxlength="50" name="email" id="email">
       <div *ngIf="addUserForm.controls['email'].hasError('required') && addUserForm.controls['email'].touched"
         class="text-danger">This field is required.</div>
       <div
@@ -79,7 +79,8 @@
 
   <div class="row">
     <div class="col-md-6 mb-3">
-      <button class="btn btn-success" type="submit" [disabled]="!addUserForm.valid">
+      <!-- [disabled]="!addUserForm.valid" -->
+      <button class="btn btn-success" type="submit">
         {{UserId?'Update':'Save'}}
       </button>
     </div>

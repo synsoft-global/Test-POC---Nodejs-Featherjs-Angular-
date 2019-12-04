@@ -67,57 +67,74 @@ export class AddJobComponent implements OnInit {
 
   /**
   * function to handle addJobForm submission
-  * @param  {FormGroup} value: addCompanyForm
+  * @param  {FormGroup} value: addJobForm
   */
   onSubmit(value) {
-    /**
-     * call to AddCompany service
-     * @param  {FormGroup} value: addCompanyForm
-     */
-    if (this.JobId) {
-      value.Id = this.JobId;
-      this.subscriptions.push(this._JobService.UpdateJob(value).subscribe((res: any) => {
-        if (res) {
-          this.showSuccess('Data updated successfully.');
-          this._router.navigate(['/job']);
-        }
-        else {
-          this.showError('Something Went Wrong');
-        }
-      },
-        err => {
-          this.showError(err.message);
-        }
-      ))
+    this.addJobForm.markAllAsTouched(); // This Function is to touch all the input
+    if (this.addJobForm.valid) {
+      /**
+   * call to UpdateJob service
+   * @param  {FormGroup} value: UpdateJobForm
+   */
+      if (this.JobId) {
+        value.Id = this.JobId;
+        this.subscriptions.push(this._JobService.UpdateJob(value).subscribe((res: any) => {
+          if (res) {
+            this.showSuccess('Data updated successfully.');
+            this._router.navigate(['/job']);
+          }
+          else {
+            this.showError('Something Went Wrong');
+          }
+        },
+          err => {
+            this.showError(err.message);
+          }
+        ))
 
+      }
+      else {
+        /**
+  * call to AddJob service
+  * @param  {FormGroup} value: AddJobForm
+  */
+        this.subscriptions.push(this._JobService.AddJob(value).subscribe((res: any) => {
+          if (res) {
+            this.showSuccess('Data saved successfully.');
+            this._router.navigate(['/job']);
+          }
+          else {
+            this.showError('Something Went Wrong');
+          }
+        },
+          err => {
+            this.showError(err.message);
+          }
+        ))
+      }
     }
-    else {
-      this.subscriptions.push(this._JobService.AddJob(value).subscribe((res: any) => {
-        if (res) {
-          this.showSuccess('Data saved successfully.');
-          this._router.navigate(['/job']);
-        }
-        else {
-          this.showError('Something Went Wrong');
-        }
-      },
-        err => {
-          this.showError(err.message);
-        }
-      ))
-    }
-
   }
 
-
+  /**
+  * function to Show toast Success Message
+  */
   showSuccess(message) {
     this._toastr.clear();
     this._toastr.success('', message);
   }
+
+  /**
+  * function to Show toast Error Message
+  */
+
   showError(message) {
     this._toastr.clear();
     this._toastr.error('', message);
   }
+
+  /**
+  * function to Destroy Subscription
+  */
 
   ngOnDestroy() {
     this.subscriptions.forEach(s => s.unsubscribe());

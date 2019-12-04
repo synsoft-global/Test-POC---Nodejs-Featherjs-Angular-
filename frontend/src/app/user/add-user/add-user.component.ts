@@ -83,59 +83,72 @@ export class AddUserComponent implements OnInit {
   }
 
   /**
-  * function to handle addJobForm submission
-  * @param  {FormGroup} value: addCompanyForm
+  * function to handle addUserForm submission
+  * @param  {FormGroup} value: addUserForm
   */
   onSubmit(value) {
-    /**
-     * call to AddCompany service
-     * @param  {FormGroup} value: addCompanyForm
-     */
-    if (this.UserId) {
-      value.Id = this.UserId;
-      this.subscriptions.push(this._UserService.UpdateUser(value).subscribe((res: any) => {
-        if (res) {
-          this.showSuccess('Data updated successfully.');
-          this._router.navigate(['/']);
-        }
-        else {
-          this.showError('Something Went Wrong');
-        }
-      },
-        err => {
-          this.showError(err.message);
-        }
-      ))
+    this.addUserForm.markAllAsTouched(); // This Function is to touch all the input
+    if (this.addUserForm.valid) {
+      /**
+       * call to UpdateUser service
+       * @param  {FormGroup} value: UpdateUserForm
+       */
+      if (this.UserId) {
+        value.Id = this.UserId;
+        this.subscriptions.push(this._UserService.UpdateUser(value).subscribe((res: any) => {
+          if (res) {
+            this.showSuccess('Data updated successfully.');
+            this._router.navigate(['/']);
+          }
+          else {
+            this.showError('Something Went Wrong');
+          }
+        },
+          err => {
+            this.showError(err.message);
+          }
+        ))
 
+      }
+      else {
+        /**
+      * call to AddUser service
+      * @param  {FormGroup} value: AddUserForm
+      */
+        this.subscriptions.push(this._UserService.AddUser(value).subscribe((res: any) => {
+          if (res) {
+            this.showSuccess("Data saved successfully.");
+            this._router.navigate(['/']);
+          }
+          else {
+            this.showError("Something Went Wrong");
+          }
+        },
+          err => {
+            this.showError(err.message);
+          }
+        ))
+      }
     }
-    else {
-      this.subscriptions.push(this._UserService.AddUser(value).subscribe((res: any) => {
-        if (res) {
-          this.showSuccess("Data saved successfully.");
-          this._router.navigate(['/']);
-        }
-        else {
-          this.showError("Something Went Wrong");
-        }
-      },
-        err => {
-          this.showError(err.message);
-        }
-      ))
-    }
-
   }
 
-
+  /**
+   * function to Show toast Success Message
+   */
   showSuccess(message) {
     this._toastr.clear();
     this._toastr.success('', message);
   }
+  /**
+  * function to Show toast Error Message
+  */
   showError(message) {
     this._toastr.clear();
     this._toastr.error('', message);
   }
-
+  /**
+   * function to Destroy Subscription
+   */
   ngOnDestroy() {
     this.subscriptions.forEach(s => s.unsubscribe());
   }

@@ -25,6 +25,9 @@ export class UserService {
   /**
   * This Method is used for Get all User List
   * @param data
+  *   {
+    PageNo: Number,
+   }
   */
   GetUserList(PageNo) {
     this._commonService.showLoading(true);

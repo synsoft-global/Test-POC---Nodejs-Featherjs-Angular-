@@ -21,6 +21,9 @@ export class JobService {
   /**
   * This Method is used for Get Job List
   * @param data
+  * {
+    PageNo: Number,
+   }
   */
   GetJobList(PageNo) {
     this._commonService.showLoading(true);
@@ -54,8 +57,8 @@ export class JobService {
    *This Method is used for Update Job By Id
    * @param data
   {
-    Title: String,
-    Description: String,
+    title: String,
+    description: String,
      Id: Number,
    }
    */

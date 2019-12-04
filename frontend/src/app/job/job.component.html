@@ -28,7 +28,7 @@
             <tbody>
               <tr
                 *ngFor="let jobdetail of JobList | paginate: {id: 'server', itemsPerPage:PageSize ,currentPage:PageNo,totalItems:totalcount} let i = index">
-                <td>{{i+1}}</td>
+                <td>{{PageSize*(PageNo-1) +(i+1)}}</td>
                 <td>{{jobdetail.title}}</td>
                 <td>{{jobdetail.description}}</td>
                 <td><button type="button" title="Edit Job" class="btn btn-sm btn-info"
