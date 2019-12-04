@@ -1,0 +1,89 @@
+<form [formGroup]="addUserForm" (keydown.enter)="$event.preventDefault()" (ngSubmit)="onSubmit(addUserForm.value)"
+  class="container-fluid">
+  <div class="row">
+    <div class="col-md-12 mb-3">
+      <div class="d-block d-sm-flex p-2 my-2 bg-black rounded shadow-sm align-items-center">
+        <h6 class="mb-0  lh-100 d-flex">
+          <a class="d-flex" [routerLink]="['']" style="font-size:24px"><i class="fa fa-arrow-left"></i></a>
+          &nbsp; {{title}} User Info
+        </h6>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <label for="name"><strong>Name </strong><sup class="text-danger">*</sup></label>
+      <input type="text" placeholder="Name" class="form-control" [formControl]="addUserForm.controls['Name']"
+        maxlength="50" name="name" id="name">
+      <div *ngIf="addUserForm.controls['Name'].hasError('required') && addUserForm.controls['Name'].touched"
+        class="text-danger">This field is required.</div>
+      <div *ngIf="addUserForm.controls['Name'].hasError('maxlength') && addUserForm.controls['Name'].touched"
+        class="text-danger">This field cannot exceed 50 characters.</div>
+    </div>
+    <div class="col-md-6 mb-3">
+      <label for="Dob"><strong>Date of birth
+        </strong><sup class="text-danger">*</sup></label>
+      <div class="input-group">
+        <input readonly class="form-control" type="text" placeholder="Select DOB"
+          [formControl]="addUserForm.controls['Dob']" [owlDateTime]="dobPicker" [max]="today">
+        <owl-date-time [pickerType]="'calendar'" #dobPicker></owl-date-time>
+        <div class="input-group-append">
+          <span class="input-group-text" [owlDateTimeTrigger]="dobPicker"><i class="fa fa-calendar"
+              aria-hidden="true"></i></span>
+        </div>
+      </div>
+      <div *ngIf="addUserForm.controls['Dob'].hasError('required') && addUserForm.controls['Dob'].touched"
+        class="text-danger">This field is required.</div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <label for="Email">Email <sup class="text-danger">*</sup></label>
+      <input type="email" placeholder="Email" class="form-control" [formControl]="addUserForm.controls['Email']"
+        maxlength="50" name="email" id="email" [attr.disabled]="CompanyId">
+      <div *ngIf="addUserForm.controls['Email'].hasError('required') && addUserForm.controls['Email'].touched"
+        class="text-danger">This field is required.</div>
+      <div
+        *ngIf="addUserForm.controls['Email'].hasError('invalidEmailAddress') && addUserForm.controls['Email'].touched"
+        class="text-danger">Invalid email address.</div>
+      <div *ngIf="addUserForm.controls['Email'].hasError('maxlength') && addUserForm.controls['Email'].touched"
+        class="text-danger">This field cannot exceed 50 characters.</div>
+    </div>
+    <div class="col-md-6 mb-3">
+      <div class="radiocontainer">
+        <label for="gender">Gender <sup class="text-danger">*</sup></label>
+        <select class="form-control input-icon" [formControl]="addUserForm.controls['Gender']">
+          <option value="">-- Please Select Gender --</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+        </select>
+      </div>
+      <div *ngIf="addUserForm.controls['Gender'].hasError('required') && addUserForm.controls['Gender'].touched"
+        class="text-danger">This field is required.</div>
+      <div
+        *ngIf="addUserForm.controls['Gender'].hasError('invalidPhoneNumber') && addUserForm.controls['Gender'].touched"
+        class="text-danger">Invalid phone number.</div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <label for="hourlyrate">Hourly rate <sup class="text-danger">*</sup></label>
+      <input type="number" placeholder="Hourly rate" class="form-control"
+        [formControl]="addUserForm.controls['Hourlyrate']" maxlength="2" name="hourlyrate" id="hourlyrate">
+      <div *ngIf="addUserForm.controls['Hourlyrate'].hasError('required') && addUserForm.controls['Hourlyrate'].touched"
+        class="text-danger">This field is required.</div>
+      <div
+        *ngIf="addUserForm.controls['Hourlyrate'].hasError('invalidAmount') && addUserForm.controls['Hourlyrate'].touched"
+        class="alert alert-danger">Invalid Rate.</div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <button class="btn btn-success" type="submit" [disabled]="!addUserForm.valid">
+        {{UserId?'Update':'Save'}}
+      </button>
+    </div>
+  </div>
+</form>

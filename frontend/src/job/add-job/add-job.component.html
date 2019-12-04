@@ -1,0 +1,44 @@
+<form [formGroup]="addJobForm" (keydown.enter)="$event.preventDefault()" (ngSubmit)="onSubmit(addJobForm.value)"
+  class="container-fluid">
+  <div class="row">
+    <div class="col-md-12 mb-3">
+      <div class="d-block d-sm-flex p-2 my-2 bg-black rounded shadow-sm align-items-center">
+        <h6 class="mb-0  lh-100 d-flex">
+          <a class="d-flex" [routerLink]="['/job']" style="font-size:24px"><i class="fa fa-arrow-left"></i></a>
+          &nbsp; {{title}} Job Info
+        </h6>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <label for="Title"><strong>Name </strong><sup class="text-danger">*</sup></label>
+      <input type="text" placeholder="Title" class="form-control" [formControl]="addJobForm.controls['Title']"
+        maxlength="50" name="Title" id="Title">
+      <div *ngIf="addJobForm.controls['Title'].hasError('required') && addJobForm.controls['Title'].touched"
+        class="text-danger">This field is required.</div>
+      <div *ngIf="addJobForm.controls['Title'].hasError('maxlength') && addJobForm.controls['Title'].touched"
+        class="text-danger">This field cannot exceed 50 characters.</div>
+    </div>
+    <div class="col-md-6 mb-3">
+      <label for="Description"><strong>Description
+        </strong><sup class="text-danger">*</sup></label>
+      <input type="text" placeholder="Description" class="form-control"
+        [formControl]="addJobForm.controls['Description']" maxlength="50" name="Description" id="Description">
+      <div *ngIf="addJobForm.controls['Description'].hasError('required') && addJobForm.controls['Description'].touched"
+        class="text-danger">This field is required.</div>
+      <div
+        *ngIf="addJobForm.controls['Description'].hasError('maxlength') && addJobForm.controls['Description'].touched"
+        class="text-danger">This field cannot exceed 500 characters.</div>
+    </div>
+  </div>
+
+
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <button class="btn btn-success" type="submit" [disabled]="!addJobForm.valid">
+        {{JobId?'Update':'Save'}}
+      </button>
+    </div>
+  </div>
+</form>
