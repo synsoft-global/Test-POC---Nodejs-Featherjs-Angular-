@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { ExampleService } from './services/example.service';
 import { CommonService } from './shared/services';
 
 @Component({
@@ -12,8 +11,7 @@ export class AppComponent {
   isLoading: boolean;
   subscriptions: any[] = [];
 
-  constructor(
-    private exampleService: ExampleService, private _commonService: CommonService
+  constructor(private _commonService: CommonService
   ) {
     this.subscriptions.push(this._commonService.loadingPropertyChanged$.subscribe(
       data => {

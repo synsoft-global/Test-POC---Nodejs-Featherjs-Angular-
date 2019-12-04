@@ -5,7 +5,6 @@ import { ToastrService } from 'ngx-toastr';
 import { JobService } from '../shared/services';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
-import { ExampleService } from '../services/example.service';
 import { PAGE_No, Page_Size } from '../app.constants';
 @Component({
   selector: 'app-job',
