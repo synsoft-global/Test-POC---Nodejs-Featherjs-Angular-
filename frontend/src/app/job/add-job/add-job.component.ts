@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Validator, JobService } from 'src/app/shared/services';
 import { Validators, FormControl, FormBuilder, FormGroup } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Validator, CommonService } from '../../shared/services';
 
 @Component({
   selector: 'app-add-job',
@@ -14,6 +14,7 @@ export class AddJobComponent implements OnInit {
   addJobForm: FormGroup;            // FormGroup for addUserForm
   title: string;
   JobId: number;
+  Job: IJobModel;
   /**
   * @param  {FormBuilder} private_fb: used to create forms
   * @param  {Router} private_router: used to route application
@@ -22,17 +23,17 @@ export class AddJobComponent implements OnInit {
   */
   constructor(private _fb: FormBuilder,
     private _router: Router, private _toastr: ToastrService, private route: ActivatedRoute,
-    private _JobService: JobService) {
+    private _CommonService: CommonService) {
     this.addJobForm = _fb.group({
       title: new FormControl('', [
         Validators.maxLength(50),
         Validator.required
       ]),
       description: new FormControl('', [Validators.maxLength(500), Validator.required]),
-    })
-
+    });
     this.title = 'Add'
   }
+
   ngOnInit() {
     this.subscriptions.push(this.route.params.subscribe(params => {
       this.JobId = params['id'];
@@ -44,14 +45,12 @@ export class AddJobComponent implements OnInit {
     }))
   }
 
-
-
   /**
     * Get Job by Id
     * @param  {Number} Id: Job
     */
   GetJobById() {
-    this.subscriptions.push(this._JobService.GetJobById(this.JobId).subscribe((res: any) => {
+    this.subscriptions.push(this._CommonService.GetById(this.JobId, 'job').subscribe((res: any) => {
       if (res) {
         this.addJobForm.setValue({
           title: res.title,
@@ -73,45 +72,24 @@ export class AddJobComponent implements OnInit {
     this.addJobForm.markAllAsTouched(); // This Function is to touch all the input
     if (this.addJobForm.valid) {
       /**
-   * call to UpdateJob service
-   * @param  {FormGroup} value: UpdateJobForm
-   */
+       * call to Update/Add Job service
+       * @param  {FormGroup} value: UpdateJobForm
+      */
+      let methodname = 'Add'
+      this.Job = value;
       if (this.JobId) {
-        value.Id = this.JobId;
-        this.subscriptions.push(this._JobService.UpdateJob(value).subscribe((res: any) => {
-          if (res) {
-            this.showSuccess('Data updated successfully.');
-            this._router.navigate(['/job']);
-          }
-          else {
-            this.showError('Something Went Wrong');
-          }
-        },
-          err => {
-            this.showError(err.message);
-          }
-        ))
-
-      }
-      else {
-        /**
-  * call to AddJob service
-  * @param  {FormGroup} value: AddJobForm
-  */
-        this.subscriptions.push(this._JobService.AddJob(value).subscribe((res: any) => {
-          if (res) {
-            this.showSuccess('Data saved successfully.');
-            this._router.navigate(['/job']);
-          }
-          else {
-            this.showError('Something Went Wrong');
-          }
-        },
-          err => {
-            this.showError(err.message);
-          }
-        ))
-      }
+        this.Job.id = this.JobId;
+        methodname = 'Update';
+      };
+      this.subscriptions.push(this._CommonService[methodname](this.Job, 'job').subscribe((res: any) => {
+        if (res) {
+          this.showSuccess('Data ' + methodname + ' successfully.');
+          this._router.navigate(['/job']);
+        } else
+          this.showError('Something Went Wrong');
+      }, err => {
+        this.showError(err.message);
+      }))
     }
   }
 
@@ -126,7 +104,6 @@ export class AddJobComponent implements OnInit {
   /**
   * function to Show toast Error Message
   */
-
   showError(message) {
     this._toastr.clear();
     this._toastr.error('', message);
@@ -135,9 +112,14 @@ export class AddJobComponent implements OnInit {
   /**
   * function to Destroy Subscription
   */
-
   ngOnDestroy() {
     this.subscriptions.forEach(s => s.unsubscribe());
   }
-
 }
+
+interface IJobModel {
+  id?: number;
+  title: string;
+  description?: string;
+}
+

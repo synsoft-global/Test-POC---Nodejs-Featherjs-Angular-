@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { Validator, UserService } from 'src/app/shared/services';
+import { Validator, CommonService } from 'src/app/shared/services';
 import * as moment from 'moment';
 @Component({
   selector: 'app-add-user',
@@ -12,8 +12,9 @@ import * as moment from 'moment';
 export class AddUserComponent implements OnInit {
   subscriptions: any[] = [];      // stores all service subscriptions
   addUserForm: FormGroup;            // FormGroup for addUserForm
-  title: string;
-  UserId: Number;
+  title: string = '';
+  UserId: number;
+  User: IUserModel;
   today: any = moment().format('YYYY-MM-DD');   // todays date
   /**
   * @param  {FormBuilder} private_fb: used to create forms
@@ -23,7 +24,7 @@ export class AddUserComponent implements OnInit {
   */
   constructor(private _fb: FormBuilder,
     private _router: Router, private _toastr: ToastrService,
-    private route: ActivatedRoute, private _UserService: UserService) {
+    private route: ActivatedRoute, private _CommonService: CommonService) {
     this.addUserForm = _fb.group({
       name: new FormControl('', [
         Validators.maxLength(50),
@@ -42,10 +43,10 @@ export class AddUserComponent implements OnInit {
         Validators.required,
         Validator.amountValidator
       ]),
-    })
-
+    });
     this.title = 'Add'
   }
+
   ngOnInit() {
     this.subscriptions.push(this.route.params.subscribe(params => {
       this.UserId = params['id'];
@@ -54,17 +55,15 @@ export class AddUserComponent implements OnInit {
         this.GetJobById()
         this.title = 'Edit';
       }
-    }))
+    }));
   }
-
-
 
   /**
     * Get Job by Id
     * @param  {Number} Id: Job
     */
   GetJobById() {
-    this.subscriptions.push(this._UserService.GetUserById(this.UserId).subscribe((res: any) => {
+    this.subscriptions.push(this._CommonService.GetById(this.UserId, 'user').subscribe((res: any) => {
       if (res) {
         console.log(res);
         this.addUserForm.setValue({
@@ -75,11 +74,9 @@ export class AddUserComponent implements OnInit {
           hourlyRate: res.hourlyRate
         });
       }
-    },
-      err => {
-        this.showError(err.message);
-      }
-    ));
+    }, err => {
+      this.showError(err.message);
+    }));
   }
 
   /**
@@ -90,45 +87,25 @@ export class AddUserComponent implements OnInit {
     this.addUserForm.markAllAsTouched(); // This Function is to touch all the input
     if (this.addUserForm.valid) {
       /**
-       * call to UpdateUser service
+       * call to Add/UpdateUser service
        * @param  {FormGroup} value: UpdateUserForm
-       */
-      if (this.UserId) {
-        value.Id = this.UserId;
-        this.subscriptions.push(this._UserService.UpdateUser(value).subscribe((res: any) => {
-          if (res) {
-            this.showSuccess('Data updated successfully.');
-            this._router.navigate(['/']);
-          }
-          else {
-            this.showError('Something Went Wrong');
-          }
-        },
-          err => {
-            this.showError(err.message);
-          }
-        ))
-
-      }
-      else {
-        /**
-      * call to AddUser service
-      * @param  {FormGroup} value: AddUserForm
       */
-        this.subscriptions.push(this._UserService.AddUser(value).subscribe((res: any) => {
-          if (res) {
-            this.showSuccess("Data saved successfully.");
-            this._router.navigate(['/']);
-          }
-          else {
-            this.showError("Something Went Wrong");
-          }
-        },
-          err => {
-            this.showError(err.message);
-          }
-        ))
+      this.User = value;
+      let methodname = 'Add'
+      if (this.UserId) {
+        this.User.id = this.UserId;
+        methodname = 'Update';
       }
+      this.subscriptions.push(this._CommonService[methodname](this.User, 'user').subscribe((res: any) => {
+        if (res) {
+          this.showSuccess('Data ' + methodname + ' successfully.');
+          this._router.navigate(['/']);
+        }
+        else
+          this.showError('Something Went Wrong');
+      }, err => {
+        this.showError(err.message);
+      }))
     }
   }
 
@@ -139,6 +116,7 @@ export class AddUserComponent implements OnInit {
     this._toastr.clear();
     this._toastr.success('', message);
   }
+
   /**
   * function to Show toast Error Message
   */
@@ -146,11 +124,20 @@ export class AddUserComponent implements OnInit {
     this._toastr.clear();
     this._toastr.error('', message);
   }
+
   /**
    * function to Destroy Subscription
    */
   ngOnDestroy() {
     this.subscriptions.forEach(s => s.unsubscribe());
   }
+}
 
+interface IUserModel {
+  id?: number;
+  name: string;
+  dateOfBirth: string;
+  email: string;
+  status: string;
+  hourlyRate: string;
 }

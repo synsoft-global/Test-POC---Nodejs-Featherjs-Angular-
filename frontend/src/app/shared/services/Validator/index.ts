@@ -1,3 +1,3 @@
 // export class Index {
 // }
-export * from './validator';
+export * from './Validator';

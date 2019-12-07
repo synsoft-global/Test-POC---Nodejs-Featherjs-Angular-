@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { UserService } from '../shared/services';
+import { CommonService } from '../shared/services';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { PAGE_No, Page_Size } from '../app.constants';
@@ -19,11 +19,12 @@ export class UserComponent implements OnInit {
     ignoreBackdropClick: true,
     keyboard: false
   };
-  totalcount: Number;
+  totalcount: number;
   PageNo: number;
   PageSize: number;
-  UserId: Number;
-  constructor(private _toastr: ToastrService, private _UserService: UserService, private modalService: BsModalService) { }
+  UserId: number;
+  constructor(private _toastr: ToastrService,
+    private modalService: BsModalService, private _CommonService: CommonService) { }
 
   ngOnInit() {
     this.PageNo = PAGE_No;
@@ -31,12 +32,11 @@ export class UserComponent implements OnInit {
     this.GetUserList();
   }
 
-
   /**
   * Get List User
   */
   GetUserList() {
-    this.subscriptions.push(this._UserService.GetUserList(this.PageNo).subscribe((res: any) => {
+    this.subscriptions.push(this._CommonService.GetList(this.PageNo, 'user').subscribe((res: any) => {
       if (res) {
         this.UserList = res.data; //Bind to view
         this.totalcount = res.total;
@@ -44,11 +44,9 @@ export class UserComponent implements OnInit {
         this.UserList = [];
         this.showError('Something Went Wrong');
       }
-    },
-      err => {
-        this.showError(err.message);
-      }
-    ));
+    }, err => {
+      this.showError(err.message);
+    }));
   }
 
   openmodal(UserId) {
@@ -68,36 +66,44 @@ export class UserComponent implements OnInit {
   hide() {
     this.modalRef.hide();
   }
+
   /**
   * Remove User By UserID
      * @param  {Number} params: UserId
   */
   RemoveUserById(UserId) {
-    this.subscriptions.push(this._UserService.RemoveUserById(UserId).subscribe((res: any) => {
+    this.subscriptions.push(this._CommonService.RemoveById(UserId, 'user').subscribe((res: any) => {
       if (res) {
         this.hide();
         this.PageNo = PAGE_No
         this.GetUserList();
         this.showSuccess('Data deleted successfully.');
-      } else {
+      } else
         this.showError('Something Went Wrong');
-      }
-    },
-      err => {
-        this.showError(err.message);
-      }
-    ));
+    }, err => {
+      this.showError(err.message);
+    }));
   }
 
+  /**
+   * function to Show toast Success Message
+   */
   showSuccess(message) {
     this._toastr.clear();
     this._toastr.success('', message);
   }
+
+  /**
+  * function to Show toast Error Message
+  */
   showError(message) {
     this._toastr.clear();
     this._toastr.error('', message);
   }
 
+  /**
+     * function to Destroy Subscription
+  */
   ngOnDestroy() {
     this.subscriptions.forEach(s => s.unsubscribe());
   }

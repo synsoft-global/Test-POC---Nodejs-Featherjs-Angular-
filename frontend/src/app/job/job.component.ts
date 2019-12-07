@@ -2,7 +2,7 @@ import {
   Component, OnInit, ViewChild, ElementRef
 } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { JobService } from '../shared/services';
+import { CommonService } from '../shared/services';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { PAGE_No, Page_Size } from '../app.constants';
@@ -16,8 +16,8 @@ export class JobComponent implements OnInit {
   modalRef: BsModalRef;
   subscriptions: any[] = [];      // stores all service subscriptions
   JobList: any[] = [];        // stores all Job list
-  JobId: Number;
-  totalcount: Number;
+  JobId: number;
+  totalcount: number;
   PageNo: number;
   PageSize: number;
   config = {
@@ -26,7 +26,7 @@ export class JobComponent implements OnInit {
   };
 
   constructor(private _toastr: ToastrService,
-    private _JobService: JobService, private modalService: BsModalService) { }
+    private modalService: BsModalService, private _CommonService: CommonService) { }
 
   ngOnInit() {
     this.PageNo = PAGE_No;
@@ -38,7 +38,7 @@ export class JobComponent implements OnInit {
   * Get Job List
   */
   GetJobList() {
-    this.subscriptions.push(this._JobService.GetJobList(this.PageNo).subscribe((res: any) => {
+    this.subscriptions.push(this._CommonService.GetList(this.PageNo, 'job').subscribe((res: any) => {
       if (res) {
         console.log(res);
         this.JobList = res.data; //Bind to view
@@ -59,7 +59,6 @@ export class JobComponent implements OnInit {
     this.modalRef = this.modalService.show(this.ConfirmationModal, this.config);
   }
 
-
   /**
  * Use for pagination
  * @param  {number} page: page number
@@ -78,7 +77,7 @@ export class JobComponent implements OnInit {
     * @param  {Number} params: JobId
  */
   RemoveJobById(JobId) {
-    this.subscriptions.push(this._JobService.RemoveJobById(JobId).subscribe((res: any) => {
+    this.subscriptions.push(this._CommonService.RemoveById(JobId, 'job').subscribe((res: any) => {
       if (res) {
         this.hide();
         this.PageNo = PAGE_No

@@ -14,7 +14,7 @@
     <div class="col-md-6 mb-3">
       <label for="Title"><strong>Title </strong><sup class="text-danger">*</sup></label>
       <input type="text" placeholder="Title" class="form-control" [formControl]="addJobForm.controls['title']"
-        maxlength="50" name="Title" id="Title">
+        name="Title" id="Title">
       <div *ngIf="addJobForm.controls['title'].hasError('required') && addJobForm.controls['title'].touched"
         class="text-danger">This field is required.</div>
       <div *ngIf="addJobForm.controls['title'].hasError('maxlength') && addJobForm.controls['title'].touched"
